@@ -4,7 +4,10 @@ Plugin to retrieve OnTime features for GitExtensions
 
 ## Installation steps
 
+Make sure you have at least **version 2.47** of GitExtensions before continuing
+
 1. Download the latest DLL from the [releases page](https://github.com/andypaxo/ontime-git-extensions/releases)
+2. Open the properties for the file and unblock it
 1. Add it to your `\Program Files (x86)\GitExtensions\Plugins` directory
 1. Restart Git Extensions
 1. In the Plugins menu, open Options and click OnTime Tickets
