@@ -1,6 +1,7 @@
 ﻿// TODO : Extension crashes if main form is closed! (ObjectDisposedException)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using GitUI.CommandsDialogs;
 using GitUIPluginInterfaces;
@@ -18,9 +19,9 @@ namespace OnTimeTicket
 
         private const string OnTimeApiKey = "0c14512c-5536-47bc-8881-57edd63f1ae6";
         private const string OnTimeApiSecret = "4857d80a-177a-4c4f-a0c0-c51d9de060c7";
-        private const string AccessTokenSettingName = "OnTime access token";
-        private const string OrganizationSettingName = "OnTime organization";
-        private const string UserIdSettingName = "OnTime user ID";
+        private StringSetting AccessTokenSettingName = new StringSetting("OnTime access token", "");
+        private StringSetting OrganizationSettingName = new StringSetting("OnTime organization", "");
+        private StringSetting UserIdSettingName = new StringSetting("OnTime user ID", "");
 
         public override bool Execute(GitUIBaseEventArgs gitUiCommands)
         {
@@ -63,7 +64,7 @@ namespace OnTimeTicket
             }
 
             // TODO : Have to renew access token when it expires (every 30 days)
-            if (string.IsNullOrEmpty(Settings.GetSetting(AccessTokenSettingName)))
+            if (string.IsNullOrEmpty(AccessTokenSettingName[Settings]))
                 ObtainAccessToken(e);
 
             ownerForm = e.OwnerForm;
@@ -72,7 +73,7 @@ namespace OnTimeTicket
 
         private void ObtainAccessToken(GitUIBaseEventArgs e)
         {
-            var companyName = Settings.GetSetting(OrganizationSettingName);
+            var companyName = OrganizationSettingName[Settings];
             var authForm = new FormGetAuthCode
             {
                 OnTimeApiKey = OnTimeApiKey,
@@ -82,20 +83,20 @@ namespace OnTimeTicket
             using (authForm)
             {
                 authForm.ShowDialog(e.OwnerForm);
-                Settings.SetSetting(AccessTokenSettingName, authForm.OnTimeAccessToken);
-                Settings.SetSetting(UserIdSettingName, authForm.OnTimeUserId);
+                AccessTokenSettingName[Settings] = authForm.OnTimeAccessToken;
+                UserIdSettingName[Settings] = authForm.OnTimeUserId;
             }
         }
-
+        
         private void DelayedStartTimerDone(object sender, EventArgs eventArgs)
         {
             timer.Stop();
 
             ticketForm.Visible = false;
             ticketForm.ShowTickets(
-                Settings.GetSetting(OrganizationSettingName),
-                Settings.GetSetting(AccessTokenSettingName),
-                Settings.GetSetting(UserIdSettingName));
+                OrganizationSettingName[Settings],
+                AccessTokenSettingName[Settings],
+                UserIdSettingName[Settings]);
             ticketForm.Show(ownerForm);
 
             var commitDialog = (FormCommit)Application.OpenForms.Cast<Form>().FirstOrDefault(x => x is FormCommit);
@@ -125,12 +126,11 @@ namespace OnTimeTicket
             get { return "OnTime Tickets"; }
         }
 
-        protected override void RegisterSettings()
+        public override IEnumerable<ISetting> GetSettings()
         {
-            base.RegisterSettings();
-            Settings.AddSetting(OrganizationSettingName, "");
-            Settings.AddSetting(UserIdSettingName, "");
-            Settings.AddSetting(AccessTokenSettingName, "");
+            yield return OrganizationSettingName;
+            yield return UserIdSettingName;
+            yield return AccessTokenSettingName;
         }
     }
 }
