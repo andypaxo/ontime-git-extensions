@@ -12,42 +12,22 @@ namespace OnTimeTicket
     public class OnTimeTicketDropDownButton : ToolStripDropDownButton
     {
         public FormCommit CommitDialog { get; set; }
+        private OnTimeConnector connector;
 
-        public OnTimeTicketDropDownButton()
+        public OnTimeTicketDropDownButton(OnTimeConnector connector)
             : base("OnTime tickets")
         {
+            this.connector = connector;
             DropDown = new ToolStripDropDown();
+            connector.OnFeaturesUpdated += OnFeaturesUpdated;
         }
 
-        public void ShowTickets(string company, string accessToken, string userId)
+        private void OnFeaturesUpdated(object sender, OnTimeFeaturesEventArgs e)
         {
-            try
-            {
-                var webRequest = WebRequest.Create(string.Format(
-                    "https://{0}.ontimenow.com/api/v2/features?page_size=1000&assigned_to_id={1}&columns=id,name,workflow_step",
-                    company,
-                    userId));
-                webRequest.Headers["Authorization"] = string.Format("Bearer {0}", accessToken);
-                var webResponse = webRequest.GetResponse();
+            EmptyDropdown();
 
-                var responseStream = webResponse.GetResponseStream();
-                if (responseStream == null)
-                    throw new Exception("No response from OnTime");
-
-                var features =
-                    (FeaturesResponse)
-                        new DataContractJsonSerializer(typeof (FeaturesResponse)).ReadObject(responseStream);
-                var featuresInProgress = features.data.Where(x => x.workflow_step.name == "In Progress");
-
-                EmptyDropdown();
-
-                foreach (var feature in featuresInProgress)
-                    DropDown.Items.Add(feature.ToString(), null, AddMessage);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            foreach (var feature in e.Features)
+                DropDown.Items.Add(feature.ToString(), null, AddMessage);
         }
 
         private void EmptyDropdown()
@@ -64,6 +44,13 @@ namespace OnTimeTicket
             Func<Control, bool> isMessageInput = x => x is EditNetSpell;
             var messageInput = WinFormUtils.FindControl(isMessageInput, CommitDialog);
             messageInput.Text += "\n\n" + message;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (connector != null) 
+                connector.OnFeaturesUpdated -= OnFeaturesUpdated;
         }
     }
 }

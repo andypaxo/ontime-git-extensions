@@ -59,6 +59,7 @@
       <DependentUpon>FormGetAuthCode.cs</DependentUpon>
     </Compile>
     <Compile Include="OAuthTokenResponse.cs" />
+    <Compile Include="OnTimeConnector.cs" />
     <Compile Include="OnTimeTicketDropDownButton.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -20,6 +20,7 @@ namespace OnTimeTicket
         private readonly StringSetting organizationSettingName = new StringSetting("OnTime organization", "");
         private readonly StringSetting userIdSettingName = new StringSetting("OnTime user ID", "");
         private OnTimeTicketDropDownButton dropDown;
+        private OnTimeConnector connector;
 
         public override bool Execute(GitUIBaseEventArgs gitUiCommands)
         {
@@ -63,14 +64,13 @@ namespace OnTimeTicket
                 timer.Interval = 200;
             }
 
-            // TODO : Have to renew access token when it expires (every 30 days)
             if (string.IsNullOrEmpty(accessTokenSettingName[Settings]))
                 ObtainAccessToken(e);
 
             timer.Start();
         }
 
-        private void ObtainAccessToken(GitUIBaseEventArgs e)
+        private void ObtainAccessToken(GitUIBaseEventArgs e = null)
         {
             var companyName = organizationSettingName[Settings];
             var authForm = new FormGetAuthCode
@@ -81,9 +81,13 @@ namespace OnTimeTicket
             };
             using (authForm)
             {
-                authForm.ShowDialog(e.OwnerForm);
+                if (e == null)
+                    authForm.ShowDialog();
+                else
+                    authForm.ShowDialog(e.OwnerForm);
                 accessTokenSettingName[Settings] = authForm.OnTimeAccessToken;
                 userIdSettingName[Settings] = authForm.OnTimeUserId;
+                connector.GetTickets();
             }
         }
         
@@ -91,8 +95,12 @@ namespace OnTimeTicket
         {
             timer.Stop();
 
+            if (connector == null)
+                SetUpConnector();
+
             if (dropDown == null)
-                dropDown = new OnTimeTicketDropDownButton();
+                dropDown = new OnTimeTicketDropDownButton(connector);
+            connector.GetTickets();
 
             var commitDialog = (FormCommit) Application.OpenForms.Cast<Form>().FirstOrDefault(x => x is FormCommit);
             if (commitDialog != null)
@@ -103,11 +111,16 @@ namespace OnTimeTicket
                 toolbarCommit.Items.Add(dropDown);
                 commitDialog.Focus();
             }
+        }
 
-            dropDown.ShowTickets(
+        private void SetUpConnector()
+        {
+            connector = new OnTimeConnector(
                 organizationSettingName[Settings],
                 accessTokenSettingName[Settings],
                 userIdSettingName[Settings]);
+            connector.OnCommunicationError += (s, e) => MessageBox.Show(e.Message);
+            connector.OnFailedAuthentication += (s, e) => ObtainAccessToken();
         }
 
         public override string Description
