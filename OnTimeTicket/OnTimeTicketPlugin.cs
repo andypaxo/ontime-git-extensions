@@ -46,10 +46,16 @@ namespace OnTimeTicket
             gitUiCommands.PostCommit -= GitUiCommandsOnPostCommit;
 
             if (ticketForm != null)
+            {
                 ticketForm.Dispose();
+                ticketForm = null;
+            }
 
             if (timer != null)
+            {
                 timer.Dispose();
+                timer = null;
+            }
         }
 
         void GitUICommandsOnPreCommit(object sender, GitUIBaseEventArgs e)
