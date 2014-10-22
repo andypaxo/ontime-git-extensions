@@ -58,23 +58,18 @@
     <Compile Include="FormGetAuthCode.Designer.cs">
       <DependentUpon>FormGetAuthCode.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormShowTickets.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormShowTickets.Designer.cs">
-      <DependentUpon>FormShowTickets.cs</DependentUpon>
-    </Compile>
     <Compile Include="OAuthTokenResponse.cs" />
+    <Compile Include="OnTimeTicketDropDownButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="OnTimeTicketPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserAgentSwitcher.cs" />
+    <Compile Include="WinFormUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FormGetAuthCode.resx">
       <DependentUpon>FormGetAuthCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormShowTickets.resx">
-      <DependentUpon>FormShowTickets.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
