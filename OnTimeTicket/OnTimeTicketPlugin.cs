@@ -109,8 +109,6 @@ namespace OnTimeTicket
             if (commitDialog != null)
             {
                 ticketForm.CommitDialog = commitDialog;
-                // This fixes an existing problem in GitExtensions!
-                commitDialog.Left = Math.Max(0, commitDialog.Left);
 
                 ticketForm.Left = commitDialog.Right;
                 ticketForm.Top = commitDialog.Top;

@@ -48,7 +48,7 @@
             this.ClientSize = new System.Drawing.Size(823, 564);
             this.Controls.Add(this.webBrowser);
             this.Name = "FormGetAuthCode";
-            this.Text = "FormGetAuthCode";
+            this.Text = "Log in with OnTime";
             this.Load += new System.EventHandler(this.FormGetAuthCode_Load);
             this.ResumeLayout(false);
 
