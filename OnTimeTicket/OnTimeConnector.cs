@@ -45,7 +45,7 @@ namespace OnTimeTicket
                 var featuresInProgress = features.data.Where(x => x.workflow_step.name == "In Progress");
 
                 if (OnFeaturesUpdated != null)
-                    OnFeaturesUpdated(this, new OnTimeFeaturesEventArgs {Features = featuresInProgress});
+                    OnFeaturesUpdated(this, new OnTimeFeaturesEventArgs {Features = featuresInProgress.ToList()});
             }
             catch (WebException wex)
             {
@@ -72,7 +72,7 @@ namespace OnTimeTicket
 
     public class OnTimeFeaturesEventArgs : EventArgs
     {
-        public IEnumerable<Feature> Features { get; set; }
+        public IList<Feature> Features { get; set; }
     }
 
     public class MessageEventArgs : EventArgs

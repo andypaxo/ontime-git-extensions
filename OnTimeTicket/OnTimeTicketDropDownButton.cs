@@ -13,9 +13,10 @@ namespace OnTimeTicket
     {
         public FormCommit CommitDialog { get; set; }
         private OnTimeConnector connector;
+        private static string TitleText = "O&nTime tickets";
 
         public OnTimeTicketDropDownButton(OnTimeConnector connector)
-            : base("OnTime tickets")
+            : base(TitleText)
         {
             this.connector = connector;
             DropDown = new ToolStripDropDown();
@@ -28,6 +29,7 @@ namespace OnTimeTicket
 
             foreach (var feature in e.Features)
                 DropDown.Items.Add(feature.ToString(), null, AddMessage);
+            Text = string.Format("{0} ({1})", TitleText, e.Features.Count);
         }
 
         private void EmptyDropdown()
