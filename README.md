@@ -4,7 +4,7 @@ Plugin to retrieve OnTime features for GitExtensions
 
 ## Installation steps
 
-Make sure you have at least **version 2.47** of GitExtensions before continuing
+Make sure you have at least **version 2.48** of GitExtensions before continuing
 
 1. Download the latest DLL from the [releases page](https://github.com/andypaxo/ontime-git-extensions/releases)
 2. Open the properties for the file and unblock it
