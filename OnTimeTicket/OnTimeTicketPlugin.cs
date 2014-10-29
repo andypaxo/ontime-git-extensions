@@ -96,10 +96,13 @@ namespace OnTimeTicket
             timer.Stop();
 
             if (connector == null)
-                SetUpConnector();
+                connector = SetUpConnector();
 
             if (dropDown == null)
-                dropDown = new OnTimeTicketDropDownButton(connector);
+            {
+                dropDown = new OnTimeTicketDropDownButton();
+                connector.OnFeaturesUpdated += dropDown.OnFeaturesUpdated;
+            }
             connector.GetTickets();
 
             var commitDialog = (FormCommit) Application.OpenForms.Cast<Form>().FirstOrDefault(x => x is FormCommit);
@@ -113,14 +116,15 @@ namespace OnTimeTicket
             }
         }
 
-        private void SetUpConnector()
+        private OnTimeConnector SetUpConnector()
         {
-            connector = new OnTimeConnector(
+            var result = new OnTimeConnector(
                 organizationSettingName[Settings],
                 accessTokenSettingName[Settings],
                 userIdSettingName[Settings]);
-            connector.OnCommunicationError += (s, e) => MessageBox.Show(e.Message);
-            connector.OnFailedAuthentication += (s, e) => ObtainAccessToken();
+            result.OnCommunicationError += (s, e) => MessageBox.Show(e.Message);
+            result.OnFailedAuthentication += (s, e) => ObtainAccessToken();
+            return result;
         }
 
         public override string Description

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Runtime.Serialization.Json;
 using System.Windows.Forms;
 using GitUI.CommandsDialogs;
 using GitUI.SpellChecker;
@@ -12,18 +10,15 @@ namespace OnTimeTicket
     public class OnTimeTicketDropDownButton : ToolStripDropDownButton
     {
         public FormCommit CommitDialog { get; set; }
-        private OnTimeConnector connector;
         private static string TitleText = "O&nTime tickets";
 
-        public OnTimeTicketDropDownButton(OnTimeConnector connector)
+        public OnTimeTicketDropDownButton()
             : base(TitleText)
         {
-            this.connector = connector;
             DropDown = new ToolStripDropDown();
-            connector.OnFeaturesUpdated += OnFeaturesUpdated;
         }
 
-        private void OnFeaturesUpdated(object sender, OnTimeFeaturesEventArgs e)
+        public void OnFeaturesUpdated(object sender, OnTimeFeaturesEventArgs e)
         {
             EmptyDropdown();
 
@@ -46,13 +41,6 @@ namespace OnTimeTicket
             Func<Control, bool> isMessageInput = x => x is EditNetSpell;
             var messageInput = WinFormUtils.FindControl(isMessageInput, CommitDialog);
             messageInput.Text += "\n\n" + message;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (connector != null) 
-                connector.OnFeaturesUpdated -= OnFeaturesUpdated;
         }
     }
 }
